@@ -12,32 +12,38 @@ bot.command('todo', async (ctx) => {
     console.log(ctx.chat)
     if (ctx.chat.id == group_id) {
 
-        let todo_id = Math.round(ctx.payload)
-        let formattedText = '';
-        if (isNaN(todo_id) || todo_id == "") {
+        try {
+            let todo_id = Math.round(ctx.payload)
+            let formattedText = '';
+            if (isNaN(todo_id) || todo_id == "") {
 
-            const my_todo = await select_all_todo();
+                const my_todo = await select_all_todo();
 
-            my_todo.forEach((item, index) => {
-                formattedText += `${index + 1}.title: ${item.title}\ndesc: ${item.description.replace(/\r\n/g, ' ')}\n`;
-            });
-            await ctx.reply(formattedText)
+                my_todo.forEach((item, index) => {
+                    formattedText += `${index + 1}.title: ${item.title}\ndesc: ${item.description.replace(/\r\n/g, ' ')}\n`;
+                });
+                await ctx.reply(formattedText)
 
-        }
-        else {
-            let todo = await select_todo(todo_id)
-
-            if (todo.length == 0) {
-                await ctx.reply("no todo found")
-                return
             }
+            else {
+                let todo = await select_todo(todo_id)
 
-            todo.forEach((item, index) => {
-                formattedText += `${index + 1}.title: ${item.title}\ndesc: ${item.description.replace(/\r\n/g, ' ')}\n`;
-            });
+                if (todo.length == 0) {
+                    await ctx.reply("no todo found")
+                    return
+                }
 
-            await ctx.reply(formattedText)
+                todo.forEach((item, index) => {
+                    formattedText += `${index + 1}.title: ${item.title}\ndesc: ${item.description.replace(/\r\n/g, ' ')}\n`;
+                });
+
+                await ctx.reply(formattedText)
+            }
         }
+        catch (error) {
+            console.log('aa')
+        }
+
 
     }
     else {
@@ -56,13 +62,19 @@ bot.command('addtodo', async (ctx) => {
 
     if (ctx.chat.id == group_id) {
 
-        if (matches) {
-            const text1 = matches[1];
-            const text2 = matches[2];
-            await insert_todo(text1, text2)
-            await ctx.reply(`todo title:${text1} description:${text2}`)
-        } else {
-            await ctx.reply("Invalid format");
+        try {
+            if (matches) {
+                const text1 = matches[1];
+                const text2 = matches[2];
+                await insert_todo(text1, text2)
+                await ctx.reply(`todo title:${text1} description:${text2}`)
+            } else {
+                await ctx.reply("Invalid format");
+            }
+        }
+
+        catch (error) {
+            console.log('bb')
         }
 
     }
@@ -79,11 +91,17 @@ bot.command('deltodo', async (ctx) => {
 
     if (ctx.chat.id == group_id) {
 
-        if (!isNaN(input)) {
-            await delete_todo(input)
-            await ctx.reply(`todo id:${input} deleted`)
-        } else {
-            await ctx.reply("Invalid format");
+        try {
+            if (!isNaN(input)) {
+                await delete_todo(input)
+                await ctx.reply(`todo id:${input} deleted`)
+            } else {
+                await ctx.reply("Invalid format");
+            }
+        }
+
+        catch (error) {
+            console.log('cc')
         }
 
     }
